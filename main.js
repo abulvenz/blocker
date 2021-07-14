@@ -85,8 +85,9 @@ const drop = () => {
 const click = (idx) => {
     const connected = flood(coord(idx));
     if (connected.length >= 3) {
-        score = score + connected.length * connected.length;
-        field[idx].n = connected.map(coord).map(countAt).reduce((acc, v) => acc + v, 0);
+        const count = connected.map(coord).map(countAt).reduce((acc, v) => acc + v, 0);
+        score = score + count * count + connected.length * connected.length;
+        field[idx].n = count;
         connected.filter(i => field[idx].c === 'YELLOW' ? true : i != idx).forEach(n => (field[n] = {
             c: "BLACK",
             n: 0,
