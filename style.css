@@ -16,14 +16,14 @@ h1 {
     display: grid;
     grid-template-columns: repeat(5, min(10vh, 10vw));
     grid-template-rows: repeat(5, min(10vh, 10vw));
-    gap: min(1vh, 1vw);
+    gap: min(.3vh, .3vw);
 }
 
 .field7 {
     display: grid;
     grid-template-columns: repeat(7, min(10vh, 10vw));
     grid-template-rows: repeat(7, min(10vh, 10vw));
-    gap: min(1vh, 1vw);
+    gap: min(.3vh, .3vw);
 }
 
 .box {
@@ -44,7 +44,7 @@ h1 {
         box-shadow: 0 0 0 0px rgba(255, 255, 255, 1);
     }
     100% {
-        box-shadow: 0 0 0 min(1vh, 1vw) rgba(180, 164, 164, 0);
+        box-shadow: 0 0 0 min(.3vh, .3vw) rgba(180, 164, 164, .5);
     }
 }
 
@@ -72,6 +72,26 @@ h1 {
     background-color: yellow;
     color: black;
     animation: pulse-animation 2s infinite;
+}
+
+.connected-top {
+    border-top-left-radius: 0vw;
+    border-top-right-radius: 0vw;
+}
+
+.connected-left {
+    border-top-left-radius: 0vw;
+    border-bottom-left-radius: 0vw;
+}
+
+.connected-right {
+    border-top-right-radius: 0vw;
+    border-bottom-right-radius: 0vw;
+}
+
+.connected-bottom {
+    border-bottom-left-radius: 0vw;
+    border-bottom-right-radius: 0vw;
 }
 
 @keyframes fadeIn {

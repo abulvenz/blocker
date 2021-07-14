@@ -40,13 +40,11 @@ const randomElement = (arr = []) => arr[trunc(random() * arr.length)];
 const coord = (idx) => ({c: idx % N, r: trunc(idx / N)});
 const index = (p) => p.r * N + p.c;
 const onBoard = (p) => p.r >= 0 && p.c >= 0 && p.r < N && p.c < N;
-const neighbors = (p) =>
-    [
-        {r: p.r - 1, c: p.c},
-        {r: p.r + 1, c: p.c},
-        {r: p.r, c: p.c - 1},
-        {r: p.r, c: p.c + 1},
-    ].filter(onBoard);
+const upper = (p) => ({r: p.r - 1, c: p.c});
+const lower = (p) => ({r: p.r + 1, c: p.c});
+const left = (p) => ({r: p.r, c: p.c - 1});
+const right = (p) => ({r: p.r, c: p.c + 1});
+const neighbors = (p) => [upper(p), lower(p), left(p), right(p)].filter(onBoard);
 const colorAt = (p) => field[index(p)].c;
 const countAt = (p) => field[index(p)].n;
 const contains = (arr, e) => arr.indexOf(e) >= 0;
@@ -127,9 +125,14 @@ console.log(field);
 
 //setInterval(() => [newGame(), m.redraw()], 100)
 
+const borderClasses = (idx) => use(coord(idx),p => use(colorAt(p),ownColor=>
+    [{f:upper,s:'top'},{f:lower,s:'bottom'},{f:left,s:'left'},{f:right,s:'right'}]
+    .filter(n=>use(n.f(p),np =>onBoard(np) && colorAt(np)===ownColor)).map(n=>'.connected-'+n.s).join(' ')
+));
+
 const box = (vnode) => ({
-    view: ({attrs: {field, onclick}}) =>
-        div[COLORS[field.c]].box(
+    view: ({attrs: {field,idx, onclick}}) =>
+        div[COLORS[field.c]][borderClasses(idx)].box(
             {
                 onclick,
             },
@@ -138,10 +141,10 @@ const box = (vnode) => ({
 });
 
 const scoreView = (vnode) => ({
-    view : vnode => small(vScore)
+    view: (vnode) => small(vScore),
 });
 
-setInterval(()=>[vScore+=vScore < score ? trunc((score-vScore)/2):0,m.redraw()] ,30);
+setInterval(() => [(vScore += vScore < score ? trunc((score - vScore) / 2) : 0), m.redraw()], 30);
 
 m.mount(document.body, {
     view: (vnode) => [
@@ -150,6 +153,7 @@ m.mount(document.body, {
                 m(box, {
                     key: f.x,
                     field: f,
+                    idx,
                     onclick: () => click(idx),
                 })
             )
