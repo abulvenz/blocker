@@ -5,11 +5,25 @@ body {
 }
 
 .field {
-    margin: 10vw 10vw 0vw;
+    margin: 10vw 10vw 0vw;    border-radius: min(1vh, 1vw);
+
 }
 
 h1 {
     margin: 2vw 10vw;
+}
+
+.stars {
+    margin:2vw 10vw;
+}
+
+h3.stars{
+    margin-top: 40vh;
+    margin-bottom: 30vh;
+}
+
+.field-glow {
+    animation: large-pulse-animation 2s infinite;
 }
 
 .field5 {
@@ -45,6 +59,15 @@ h1 {
     }
     100% {
         box-shadow: 0 0 0 min(.3vh, .3vw) rgba(180, 164, 164, .5);
+    }
+}
+
+@keyframes large-pulse-animation {
+    0% {
+        box-shadow: 0 0 0 0px rgba(255, 255, 255, 1);
+    }
+    100% {
+        box-shadow: 0 0 0 min(3vh, 3vw) rgba(180, 164, 164, 0);
     }
 }
 

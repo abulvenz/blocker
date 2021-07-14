@@ -1,8 +1,9 @@
 import m from 'mithril';
-import tagl, {feDropShadow} from 'tagl-mithril';
+import tagl from 'tagl-mithril';
 
 // prettier-ignore
 const { address, aside, footer, header, h1, h2, h3, h4, h5, h6, hgroup, main, nav, section, article, blockquote, dd, dir, div, dl, dt, figcaption, figure, hr, li, ol, p, pre, ul, a, abbr, b, bdi, bdo, br, cite, code, data, dfn, em, i, kdm, mark, q, rb, rp, rt, rtc, ruby, s, samp, small, span, strong, sub, sup, time, tt, u, wbr, area, audio, img, map, track, video, embed, iframe, noembed, object, param, picture, source, canvas, noscript, script, del, ins, caption, col, colgroup, table, tbody, td, tfoot, th, thead, tr, button, datalist, fieldset, form, formfield, input, label, legend, meter, optgroup, option, output, progress, select, textarea, details, dialog, menu, menuitem, summary, content, element, slot, template } = tagl(m);
+const {svg,polygon,g,rect,text} = tagl(m);
 
 const {keys, freeze} = Object;
 const {trunc, random, min} = Math;
@@ -34,7 +35,10 @@ let field = [];
 let score = 0;
 let vScore = 0;
 let key = 0;
-
+let stars = 2;
+let lost = false;
+let quality = 0;
+let starActive = false;
 const use = (v, fn) => fn(v);
 const randomElement = (arr = []) => arr[trunc(random() * arr.length)];
 const coord = (idx) => ({c: idx % N, r: trunc(idx / N)});
@@ -60,6 +64,8 @@ const flood = (p, connected = []) => {
     return connected;
 };
 
+const check = () => range(N * N).some((idx) => flood(coord(idx)).length >= 3);
+
 const drop = () => {
     let dropped = false;
     range(N * N)
@@ -81,20 +87,36 @@ const drop = () => {
     m.redraw();
     if (dropped) {
         setTimeout(drop, 200);
+    } else {
+        console.log((lost = !check()));
     }
 };
 
+const star = (vnode) => ({
+    view: (vnode)=>svg({height:"25px",width:"25px",onclick:vnode.attrs.onclick},
+    [
+       // rect({x:0,y:0,width:'25',height:'25',stroke:'lime'}),
+        g({transform:"scale(.125)"},
+      polygon({
+        "stroke-linecap":"round","points":"100,10 40,198 190,78 10,78 160,198","style":{"fill":"purple","stroke":"purple","stroke-width":"5","fill-rule":"nonzero"}}),
+      " Sorry, your browser does not support inline SVG. "
+        )
+    ]
+  )
+});
+
 const click = (idx) => {
     const connected = flood(coord(idx));
-    if (connected.length >= 3) {
+    if (connected.length >= 3||starActive) {       
         const count = connected
             .map(coord)
             .map(countAt)
-            .reduce((acc, v) => acc + v, 0);
-        score = score + count * count + connected.length * connected.length;
+            .reduce((acc, v) => acc + v, 0);          
+        const nScore = count * count + connected.length * connected.length;
+        score = score + nScore;
         field[idx].n = count;
         connected
-            .filter((i) => (field[idx].c === 'YELLOW' ? true : i != idx))
+            .filter((i) => (field[idx].c === 'YELLOW'||starActive ? true : i != idx))
             .forEach(
                 (n) =>
                     (field[n] = {
@@ -107,8 +129,10 @@ const click = (idx) => {
             field[idx].c = 'YELLOW';
             field[idx].x = key++;
         }
+        stars += trunc(nScore/10000);
+        starActive = false;
+        setTimeout(drop, 200);
     }
-    setTimeout(drop, 200);
 };
 
 const randomColor = () => randomElement(AV_COLORS);
@@ -125,13 +149,23 @@ console.log(field);
 
 //setInterval(() => [newGame(), m.redraw()], 100)
 
-const borderClasses = (idx) => use(coord(idx),p => use(colorAt(p),ownColor=>
-    [{f:upper,s:'top'},{f:lower,s:'bottom'},{f:left,s:'left'},{f:right,s:'right'}]
-    .filter(n=>use(n.f(p),np =>onBoard(np) && colorAt(np)===ownColor)).map(n=>'.connected-'+n.s).join(' ')
-));
+const borderClasses = (idx) =>
+    use(coord(idx), (p) =>
+        use(colorAt(p), (ownColor) =>
+            [
+                {f: upper, s: 'top'},
+                {f: lower, s: 'bottom'},
+                {f: left, s: 'left'},
+                {f: right, s: 'right'},
+            ]
+                .filter((n) => use(n.f(p), (np) => onBoard(np) && colorAt(np) === ownColor))
+                .map((n) => '.connected-' + n.s)
+                .join(' ')
+        )
+    );
 
 const box = (vnode) => ({
-    view: ({attrs: {field,idx, onclick}}) =>
+    view: ({attrs: {field, idx, onclick}}) =>
         div[COLORS[field.c]][borderClasses(idx)].box(
             {
                 onclick,
@@ -148,7 +182,7 @@ setInterval(() => [(vScore += vScore < score ? trunc((score - vScore) / 2) : 0),
 
 m.mount(document.body, {
     view: (vnode) => [
-        div.field[`field${N}`](
+     !lost ?  div[starActive?'field-glow':''].field[`field${N}`](
             field.map((f, idx) =>
                 m(box, {
                     key: f.x,
@@ -157,7 +191,14 @@ m.mount(document.body, {
                     onclick: () => click(idx),
                 })
             )
-        ),
-        h1('Blocker ', m(scoreView)),
+        ):h3.stars({onclick:newGame},"Lost! Again?"),
+        h1('Blocker ', m(scoreView) ,' ', starActive? m(star):null),
+        div.stars(
+       range(stars).map(stark=>m(star,{onclick:()=>{
+           if(!starActive) {
+           starActive = true;
+           stars--;
+           }
+       }},'*')))
     ],
 });
