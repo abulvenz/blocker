@@ -98,6 +98,7 @@ h3.stars {}
 
 .black {
     background-color: black;
+    z-index: -100;
 }
 
 .yellow {
@@ -109,31 +110,31 @@ h3.stars {}
 .connected-top {
     border-top-left-radius: 0vw;
     border-top-right-radius: 0vw;
-    animation: connect-top 2s linear;
+    animation: connect-top .2s linear;
 }
 
 .connected-left {
     border-top-left-radius: 0vw;
     border-bottom-left-radius: 0vw;
-    animation: connect-left 2s linear;
+    animation: connect-left .2s linear;
 }
 
 .connected-right {
     border-top-right-radius: 0vw;
     border-bottom-right-radius: 0vw;
-    animation: connect-right 2s linear;
+    animation: connect-right .2s linear;
 }
 
 .connected-bottom {
     border-bottom-left-radius: 0vw;
     border-bottom-right-radius: 0vw;
-    animation: connect-bottom 2s linear;
+    animation: connect-bottom .2s linear;
 }
 
 @keyframes connect-top {
     0% {
-        border-top-left-radius: 1vw;
-        border-top-right-radius: 1vw;
+        border-top-left-radius: 2vw;
+        border-top-right-radius: 2vw;
     }
     100% {
         border-top-left-radius: 0vw;
@@ -143,8 +144,8 @@ h3.stars {}
 
 @keyframes connect-bottom {
     0% {
-        border-bottom-left-radius: 1vw;
-        border-bottom-right-radius: 1vw;
+        border-bottom-left-radius: 2vw;
+        border-bottom-right-radius: 2vw;
     }
     100% {
         border-bottom-left-radius: 0vw;
@@ -154,8 +155,8 @@ h3.stars {}
 
 @keyframes connect-left {
     0% {
-        border-top-left-radius: 1vw;
-        border-bottom-left-radius: 1vw;
+        border-top-left-radius: 2vw;
+        border-bottom-left-radius: 2vw;
     }
     100% {
         border-top-left-radius: 0vw;
@@ -165,8 +166,8 @@ h3.stars {}
 
 @keyframes connect-right {
     0% {
-        border-top-right-radius: 1vw;
-        border-bottom-right-radius: 1vw;
+        border-top-right-radius: 2vw;
+        border-bottom-right-radius: 2vw;
     }
     100% {
         border-top-right-radius: 0vw;
