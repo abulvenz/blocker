@@ -5,7 +5,8 @@ body {
 }
 
 .field {
-    margin: 10vw 10vw 0vw;    border-radius: min(1vh, 1vw);
+    margin: 10vw 10vw;   
+     border-radius: min(1vh, 1vw);
 
 }
 
@@ -44,7 +45,7 @@ h3.stars{
     width: min(10vh, 10vw);
     height: min(10vh, 10vw);
     background-color: beige;
-    border-radius: min(1vh, 1vw);
+    border-radius: min(2vh, 2vw);
     display: grid;
     color: white;
     justify-content: center;
@@ -100,23 +101,74 @@ h3.stars{
 .connected-top {
     border-top-left-radius: 0vw;
     border-top-right-radius: 0vw;
+    animation: connect-top 2s linear ;
 }
 
 .connected-left {
+    
     border-top-left-radius: 0vw;
     border-bottom-left-radius: 0vw;
+    
+    animation: connect-left 2s linear ;
 }
 
 .connected-right {
+    
     border-top-right-radius: 0vw;
     border-bottom-right-radius: 0vw;
+    animation: connect-right 2s linear ;
 }
 
 .connected-bottom {
+    
     border-bottom-left-radius: 0vw;
     border-bottom-right-radius: 0vw;
+    
+    animation: connect-bottom 2s linear ;
 }
 
+@keyframes connect-top {
+    0%{
+        border-top-left-radius: 1vw;
+        border-top-right-radius: 1vw;
+    }
+    100%{
+        border-top-left-radius: 0vw;
+        border-top-right-radius: 0vw;
+    }    
+}
+
+@keyframes connect-bottom {
+    0%{
+        border-bottom-left-radius: 1vw;
+        border-bottom-right-radius: 1vw;
+    }
+    100%{
+        border-bottom-left-radius: 0vw;
+        border-bottom-right-radius: 0vw;
+    }    
+}
+@keyframes connect-left {
+    0%{
+        border-top-left-radius: 1vw;
+        border-bottom-left-radius: 1vw;
+    }
+    100%{
+        border-top-left-radius: 0vw;
+        border-bottom-left-radius: 0vw;
+    }    
+}
+
+@keyframes connect-right {
+    0%{
+        border-top-right-radius: 1vw;
+        border-bottom-right-radius: 1vw;
+    }
+    100%{
+        border-top-right-radius: 0vw;
+        border-bottom-right-radius: 0vw;
+    }    
+}
 @keyframes fadeIn {
     0% {
         opacity: 0;
