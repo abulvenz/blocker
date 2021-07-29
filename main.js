@@ -31,7 +31,7 @@ const COLORS = freeze({
     YELLOW: 'yellow',
 });
 
-const AV_COLORS = ['GREEN', 'BLUE', 'RED', /*"GREEN2", "BLUE2", "RED2"*/ ];
+const AV_COLORS = ['GREEN', 'BLUE', 'RED', "BLUE2" /*"GREEN2", "BLUE2", "RED2"*/ ];
 
 let N = 7;
 let field = [];
@@ -51,16 +51,17 @@ const upper = (p) => ({ r: p.r - 1, c: p.c });
 const lower = (p) => ({ r: p.r + 1, c: p.c });
 const left = (p) => ({ r: p.r, c: p.c - 1 });
 const right = (p) => ({ r: p.r, c: p.c + 1 });
-const neighbors = (p) => [upper(p), lower(p), left(p), right(p)].filter(onBoard);
+const apply = p => f => f(p);
+const neighbors = (p) => [upper, lower, left, right].map(apply(p)).filter(onBoard);
 const colorAt = (p) => field[index(p)].c;
 const countAt = (p) => field[index(p)].n;
 const contains = (arr, e) => arr.indexOf(e) >= 0;
 const flood = (p, connected = []) => {
     if (!contains(connected, index(p))) {
         connected.push(index(p));
-        use(colorAt(p), (own) =>
+        use(colorAt(p), (ownColor) =>
             neighbors(p)
-            .filter((n) => colorAt(n) === own)
+            .filter((n) => colorAt(n) === ownColor)
             .forEach((n) => flood(n, connected))
         );
     }
