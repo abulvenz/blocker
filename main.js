@@ -6,7 +6,7 @@ const { address, aside, footer, header, h1, h2, h3, h4, h5, h6, hgroup, main, na
 const { svg, polygon, g, rect, text } = tagl(m);
 
 const { keys, freeze } = Object;
-const { trunc, random, min } = Math;
+const { trunc, random, min, round } = Math;
 
 const range = (() => {
     const r = [];
@@ -31,70 +31,183 @@ const COLORS = freeze({
     YELLOW: 'yellow',
 });
 
-const AV_COLORS = ['GREEN', 'BLUE', 'RED', "BLUE2" /*"GREEN2", "BLUE2", "RED2"*/ ];
+const AV_COLORS = ['GREEN', 'BLUE', 'RED', /*"BLUE2", /*"GREEN2", "BLUE2", "RED2"*/ ];
 
-let N = 7;
-let field = [];
-let score = 0;
-let vScore = 0;
-let key = 0;
-let stars = 2;
-let lost = false;
-let quality = 0;
-let starActive = false;
 const use = (v, fn) => fn(v);
 const randomElement = (arr = []) => arr[trunc(random() * arr.length)];
-const coord = (idx) => ({ c: idx % N, r: trunc(idx / N) });
-const index = (p) => p.r * N + p.c;
-const onBoard = (p) => p.r >= 0 && p.c >= 0 && p.r < N && p.c < N;
-const upper = (p) => ({ r: p.r - 1, c: p.c });
-const lower = (p) => ({ r: p.r + 1, c: p.c });
-const left = (p) => ({ r: p.r, c: p.c - 1 });
-const right = (p) => ({ r: p.r, c: p.c + 1 });
+
+const randomColor = () => randomElement(AV_COLORS);
+
 const apply = p => f => f(p);
-const neighbors = (p) => [upper, lower, left, right].map(apply(p)).filter(onBoard);
-const colorAt = (p) => field[index(p)].c;
-const countAt = (p) => field[index(p)].n;
-const contains = (arr, e) => arr.indexOf(e) >= 0;
-const flood = (p, connected = []) => {
-    if (!contains(connected, index(p))) {
-        connected.push(index(p));
-        use(colorAt(p), (ownColor) =>
-            neighbors(p)
-            .filter((n) => colorAt(n) === ownColor)
-            .forEach((n) => flood(n, connected))
-        );
-    }
-    return connected;
+
+const slidingAverage = (N = 0, val = 0) => {
+    return {
+        add: v => {
+            val = ((val * N) + v) / (N + 1);
+            N += 1;
+            return val;
+        },
+        value: () => val
+    };
 };
 
-const check = () => stars > 0 || range(N * N).some((idx) => flood(coord(idx)).length >= 3);
+const createGame = (N, initial = false) => {
+    let state = {
+        key: 0,
+        N,
+        clicks: 0,
+        score: 0,
+        vScore: 0,
+        stars: 2,
+        lost: false,
+        quality: 0,
+        starActive: false,
+        field: [],
+    };
+    const init = (N) => range(N * N).map((i) => ({ x: state.key++, n: 1, c: randomColor() }));
 
-const drop = () => {
-    let dropped = false;
-    range(N * N)
-        .map((i) => N * N - i - 1)
-        .forEach((idx) => {
-            if (colorAt(coord(idx)) === 'BLACK') {
-                console.log(colorAt(coord(idx)));
-                dropped = true;
-                for (let c = idx; c >= 0; c = c - N) {
-                    if (c >= N) {
-                        field[c] = field[c - N];
-                        field[c].x = key++;
-                    } else {
-                        field[c] = { n: 1, c: randomColor(), x: key++ };
+    state.field = init(N);
+
+    if (initial) {
+        (() => {
+            try {
+                const persistedState = localStorage.getItem("state");
+                if (persistedState !== null) {
+                    state = JSON.parse(persistedState);
+                    console.log(state)
+                }
+            } catch (error) {
+                // Silence;
+            }
+        })();
+    }
+
+    const qualityAverage = slidingAverage(state.clicks, state.quality);
+
+    const save = () => localStorage.setItem("state", JSON.stringify(state));
+
+    const coord = (idx) => ({ c: idx % state.N, r: trunc(idx / state.N) });
+    const index = (p) => p.r * state.N + p.c;
+    const onBoard = (p) => p.r >= 0 && p.c >= 0 && p.r < state.N && p.c < state.N;
+    const upper = (p) => ({ r: p.r - 1, c: p.c });
+    const lower = (p) => ({ r: p.r + 1, c: p.c });
+    const left = (p) => ({ r: p.r, c: p.c - 1 });
+    const right = (p) => ({ r: p.r, c: p.c + 1 });
+    const neighbors = (p) => [upper, lower, left, right].map(apply(p)).filter(onBoard);
+    const colorAt = (p) => state.field[index(p)].c;
+    const countAt = (p) => state.field[index(p)].n;
+    const contains = (arr, e) => arr.indexOf(e) >= 0;
+    const flood = (p, connected = []) => {
+        if (!contains(connected, index(p))) {
+            connected.push(index(p));
+            use(colorAt(p), (ownColor) =>
+                neighbors(p)
+                .filter((n) => colorAt(n) === ownColor)
+                .forEach((n) => flood(n, connected))
+            );
+        }
+        return connected;
+    };
+    const check = () => state.stars > 0 || range(state.N * state.N).some((idx) => flood(coord(idx)).length >= 3);
+    const drop = (cb) => {
+        let dropped = false;
+        range(state.N * state.N)
+            .map((i) => state.N * state.N - i - 1)
+            .forEach((idx) => {
+                if (colorAt(coord(idx)) === 'BLACK') {
+                    dropped = true;
+                    for (let c = idx; c >= 0; c = c - N) {
+                        if (c >= N) {
+                            state.field[c] = state.field[c - N];
+                            state.field[c].x = state.key++;
+                        } else {
+                            state.field[c] = { n: 1, c: randomColor(), x: state.key++ };
+                        }
                     }
                 }
+            });
+        if (dropped) {
+            setTimeout(() => drop(cb), 200);
+        } else {
+            state.lost = !check();
+            save();
+        }
+        cb();
+    };
+    const click = (idx, cb) => {
+        const connected = flood(coord(idx));
+        if (connected.length >= 3 || state.starActive) {
+            state.clicks += 1;
+            const count = connected
+                .map(coord)
+                .map(countAt)
+                .reduce((acc, v) => acc + v, 0);
+            const nScore = count * count + connected.length * connected.length;
+            qualityAverage.add(nScore / connected.length);
+            state.quality = qualityAverage.value();
+            state.score = state.score + nScore;
+            state.field[idx].n = count;
+            connected
+                .filter((i) => (state.field[idx].c === 'YELLOW' || state.starActive ? true : i != idx))
+                .forEach(
+                    (n) =>
+                    (state.field[n] = {
+                        c: 'BLACK',
+                        n: 0,
+                        x: state.field[n].x,
+                    })
+                );
+            if (state.field[idx].n > 10) {
+                state.field[idx].c = 'YELLOW';
+                state.field[idx].x = state.key++;
             }
-        });
-    m.redraw();
-    if (dropped) {
-        setTimeout(drop, 200);
-    } else {
-        console.log((lost = !check()));
-    }
+            state.stars += trunc(nScore / 10000);
+            state.starActive = false;
+            setTimeout(() => drop(cb), 200);
+        }
+    };
+
+    const borderClasses = (idx) =>
+        use(coord(idx), (p) =>
+            use(colorAt(p), (ownColor) => [
+                    { f: upper, s: 'top' },
+                    { f: lower, s: 'bottom' },
+                    { f: left, s: 'left' },
+                    { f: right, s: 'right' },
+                ]
+                .filter((n) => use(n.f(p), (np) => onBoard(np) && colorAt(np) === ownColor))
+                .map((n) => '.connected-' + n.s)
+                .join(' ')
+            )
+        );
+
+    return {
+        N,
+        field: () => state.field,
+        score: () => state.score,
+        vScore: (nn = state.vScore) => state.vScore = nn,
+        stars: (nn = state.stars) => state.stars = nn,
+        lost: () => state.lost,
+        quality: () => qualityAverage.value(),
+        starActive: () => state.starActive,
+        coord,
+        index,
+        onBoard,
+        flood,
+        check,
+        drop,
+        click,
+        borderClasses,
+        activateStar: () => {
+            if (!state.starActive) {
+                state.starActive = true;
+                state.stars--;
+            }
+        }
+    };
 };
+
+let game = createGame(7, true);
 
 const star = (vnode) => ({
     view: (vnode) => svg({ height: "25px", width: "25px", onclick: vnode.attrs.onclick }, [
@@ -110,104 +223,41 @@ const star = (vnode) => ({
     ])
 });
 
-const click = (idx) => {
-    const connected = flood(coord(idx));
-    if (connected.length >= 3 || starActive) {
-        const count = connected
-            .map(coord)
-            .map(countAt)
-            .reduce((acc, v) => acc + v, 0);
-        const nScore = count * count + connected.length * connected.length;
-        score = score + nScore;
-        field[idx].n = count;
-        connected
-            .filter((i) => (field[idx].c === 'YELLOW' || starActive ? true : i != idx))
-            .forEach(
-                (n) =>
-                (field[n] = {
-                    c: 'BLACK',
-                    n: 0,
-                    x: field[n].x,
-                })
-            );
-        if (field[idx].n > 10) {
-            field[idx].c = 'YELLOW';
-            field[idx].x = key++;
-        }
-        stars += trunc(nScore / 10000);
-        starActive = false;
-        setTimeout(drop, 200);
-    }
-};
-
-const randomColor = () => randomElement(AV_COLORS);
-const init = (N) => range(N * N).map((i) => ({ x: key++, n: 1, c: randomColor() }));
-const newGame = () => {
-    score = 0;
-    vScore = 0;
-    stars = 2;
-    lost = false;
-    key = 0;
-    quality = 0;
-    starActive = false;
-    field = init(N);
-};
-
-newGame();
-
-console.log(field);
-
-//setInterval(() => [newGame(), m.redraw()], 100)
-
-const borderClasses = (idx) =>
-    use(coord(idx), (p) =>
-        use(colorAt(p), (ownColor) => [
-                { f: upper, s: 'top' },
-                { f: lower, s: 'bottom' },
-                { f: left, s: 'left' },
-                { f: right, s: 'right' },
-            ]
-            .filter((n) => use(n.f(p), (np) => onBoard(np) && colorAt(np) === ownColor))
-            .map((n) => '.connected-' + n.s)
-            .join(' ')
-        )
-    );
-
 const box = (vnode) => ({
     view: ({ attrs: { field, idx, onclick } }) =>
-        div[COLORS[field.c]][borderClasses(idx)].box({
+        div[COLORS[field.c]][game.borderClasses(idx)].box({
                 onclick,
             },
             field.n > 1 ? field.n : ''
         ),
 });
 
+let vScore = 0;
+
 const scoreView = (vnode) => ({
-    view: (vnode) => small(vScore),
+    view: (vnode) => [small(vScore), " ", small(round(game.quality() * 100) / 100)],
 });
 
-setInterval(() => [(vScore += vScore < score ? trunc((score - vScore) / 2) : 0), m.redraw()], 100);
+setInterval(() => [
+    vScore += ((vScore < game.score()) ? trunc((game.score() - vScore) / 2) : 0),
+    m.redraw()
+], 100);
 
 m.mount(document.body, {
-    view: (vnode) => [div[starActive ? 'field-glow' : ''].field[`field${N}`](
-            field.map((f, idx) =>
+    view: (vnode) => [div[game.starActive() ? 'field-glow' : ''].field[`field${game.N}`](
+            game.field().map((f, idx) =>
                 m(box, {
                     key: f.x,
                     field: f,
                     idx,
-                    onclick: () => click(idx),
+                    onclick: () => game.click(idx, () => m.redraw()),
                 })
             )
-        ), !lost ? null : h3.stars({ onclick: newGame }, "Lost! Again?"),
-        h1('Blocker ', m(scoreView), ' ', starActive ? m(star) : null),
+        ), !game.lost() ? null : h3.stars({ onclick: () => game = createGame(7) }, "Lost! Again?"),
+        h1('Blocker ', m(scoreView), ' ', game.starActive() ? m(star) : null),
         div.stars(
-            range(stars).map(stark => m(star, {
-                onclick: () => {
-                    if (!starActive) {
-                        starActive = true;
-                        stars--;
-                    }
-                }
+            range(game.stars()).map(stark => m(star, {
+                onclick: () => game.activateStar()
             }, '*')))
     ],
 });
