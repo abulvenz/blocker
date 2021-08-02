@@ -1,5 +1,6 @@
 import m from 'mithril';
 import tagl from 'tagl-mithril';
+import N from './numberToText';
 
 // prettier-ignore
 const { address, aside, footer, header, h1, h2, h3, h4, h5, h6, hgroup, main, nav, section, article, blockquote, dd, dir, div, dl, dt, figcaption, figure, hr, li, ol, p, pre, ul, a, abbr, b, bdi, bdo, br, cite, code, data, dfn, em, i, kdm, mark, q, rb, rp, rt, rtc, ruby, s, samp, small, span, strong, sub, sup, time, tt, u, wbr, area, audio, img, map, track, video, embed, iframe, noembed, object, param, picture, source, canvas, noscript, script, del, ins, caption, col, colgroup, table, tbody, td, tfoot, th, thead, tr, button, datalist, fieldset, form, formfield, input, label, legend, meter, optgroup, option, output, progress, select, textarea, details, dialog, menu, menuitem, summary, content, element, slot, template } = tagl(m);
@@ -238,13 +239,26 @@ const scoreView = (vnode) => ({
     view: (vnode) => [small(vScore), " ", small(round(game.quality() * 100) / 100)],
 });
 
+const numberView = (vnode) => ({
+    view: ({ attrs }) => small.margin(N.numberToText(attrs.number, language))
+});
+
 setInterval(() => [
     vScore += ((vScore < game.score()) ? trunc((game.score() - vScore) / 2) : 0),
     m.redraw()
 ], 100);
 
+const languageSelector = () => ({
+    view: ({ attrs: { onchange, langs = ['en'] } }) => select(
+        langs.map(l => option({ onclick: () => onchange(l) }, l))
+    )
+});
+
+let language = 'en';
+
 m.mount(document.body, {
-    view: (vnode) => [div[game.starActive() ? "field-glow" : ""].field[`field${game.N}`](
+    view: (vnode) => [
+        div[game.starActive() ? "field-glow" : ""].field[`field${game.N}`](
             game.field().map((f, idx) =>
                 m(box, {
                     key: f.x,
@@ -255,9 +269,13 @@ m.mount(document.body, {
             )
         ), !game.lost() ? null : h3.stars({ onclick: () => game = createGame(7) }, "Lost! Again?"),
         h1('Blocker ', m(scoreView), ' ', game.starActive() ? m(star) : null),
+        m(numberView, { number: vScore }), m(languageSelector, {
+            langs: ['en', 'de'],
+            onchange: e => (language = e)
+        }),
         div.stars(
             range(game.stars()).map(stark => m(star, {
                 onclick: () => game.activateStar()
-            }, '*')))
+            }, '*'))),
     ],
 });
