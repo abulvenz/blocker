@@ -149,7 +149,7 @@ const createGame = (N, initial = false) => {
             state.score = state.score + nScore;
             state.field[idx].n = count;
             connected
-                .filter((i) => (state.field[idx].c === 'YELLOW' || state.starActive ? true : i != idx))
+                .filter((i) => (state.field[idx].c === 'BLUE2' || state.starActive ? true : i != idx))
                 .forEach(
                     (n) =>
                     (state.field[n] = {
@@ -160,6 +160,10 @@ const createGame = (N, initial = false) => {
                 );
             if (state.field[idx].n > 10) {
                 state.field[idx].c = 'YELLOW';
+                state.field[idx].x = state.key++;
+            }
+            if (state.field[idx].n > 100) {
+                state.field[idx].c = 'BLUE2';
                 state.field[idx].x = state.key++;
             }
             state.stars += trunc(nScore / 10000);
