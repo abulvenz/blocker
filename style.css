@@ -30,6 +30,13 @@ h3.stars {}
     gap: min(.3vh, .3vw);
 }
 
+.field6 {
+    display: grid;
+    grid-template-columns: repeat(6, min(10vh, 10vw));
+    grid-template-rows: repeat(6, min(10vh, 10vw));
+    gap: min(.3vh, .3vw);
+}
+
 .field7 {
     display: grid;
     grid-template-columns: repeat(7, min(10vh, 10vw));

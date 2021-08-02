@@ -244,7 +244,7 @@ setInterval(() => [
 ], 100);
 
 m.mount(document.body, {
-    view: (vnode) => [div[game.starActive() ? 'field-glow' : ''].field[`field${game.N}`](
+    view: (vnode) => [div[game.starActive() ? "field-glow" : ""].field[`field${game.N}`](
             game.field().map((f, idx) =>
                 m(box, {
                     key: f.x,
