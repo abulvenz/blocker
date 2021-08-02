@@ -1,9 +1,11 @@
 const { round, trunc } = Math;
 
-const numberToText_DE = (number) => {
+const use = (v, fn) => fn(v);
+
+const numberToText_DE_rec = (number) => {
     const single = {
         0: 'null',
-        1: 'eins',
+        1: 'ein',
         2: 'zwei',
         3: 'drei',
         4: 'vier',
@@ -36,15 +38,15 @@ const numberToText_DE = (number) => {
     return number < 20 ?
         single[number] :
         number < 100 ?
-        (number - trunc(number / 10) * 10 > 0 ? numberToText_DE(number - trunc(number / 10) * 10) + "und" : '') + tens[trunc(number / 10) * 10] :
+        (number - trunc(number / 10) * 10 > 0 ? numberToText_DE_rec(number - trunc(number / 10) * 10) + "und" : '') + tens[trunc(number / 10) * 10] :
         number < 1000 ?
-        single[trunc(number / 100)] + "hundert" + numberToText_DE(number - trunc(number / 100) * 100) :
+        single[trunc(number / 100)] + "hundert" + numberToText_DE_rec(number - trunc(number / 100) * 100) :
         number < 1000000 ?
-        numberToText_DE(trunc(number / 1000)) + "tausend" + numberToText_DE(number - trunc(number / 1000) * 1000) :
+        numberToText_DE_rec(trunc(number / 1000)) + "tausend" + numberToText_DE_rec(number - trunc(number / 1000) * 1000) :
         number < 1000000000 ?
-        numberToText_DE(trunc(number / 1000000)) + "million" + numberToText_DE(number - trunc(number / 1000000) * 1000000) :
+        numberToText_DE_rec(trunc(number / 1000000)) + "million" + numberToText_DE_rec(number - trunc(number / 1000000) * 1000000) :
         number < 1000000000000 ?
-        numberToText_DE(trunc(number / 1000000000)) + "milliarden" + numberToText_DE(number - trunc(number / 1000000000) * 1000000000) :
+        numberToText_DE_rec(trunc(number / 1000000000)) + "milliarden" + numberToText_DE_rec(number - trunc(number / 1000000000) * 1000000000) :
         'no';
 };
 
@@ -95,6 +97,8 @@ const numberToText_EN = (number) => {
         numberToText_EN(trunc(number / 1000000000)) + " billion " + numberToText_EN(number - trunc(number / 1000000000) * 1000000000) :
         'no';
 };
+
+const numberToText_DE = (number) => use(numberToText_DE_rec(number), n => n.endsWith("ein") ? n + 's' : n);
 
 const numberToText = (number, language) => console.log(number, language) || language === 'en' ?
     numberToText_EN(number) :

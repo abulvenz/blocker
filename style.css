@@ -13,7 +13,13 @@ h1 {
     margin: 2vw 10vw;
 }
 
-small.margin {
+div.margin {
+    margin: 2vw 10vw;
+    word-wrap: break-word;
+    hyphens: auto;
+}
+
+select.margin {
     margin: 2vw 10vw;
 }
 

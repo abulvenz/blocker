@@ -240,7 +240,7 @@ const scoreView = (vnode) => ({
 });
 
 const numberView = (vnode) => ({
-    view: ({ attrs }) => small.margin(N.numberToText(attrs.number, language))
+    view: ({ attrs }) => div.margin(small.margin(N.numberToText(attrs.number, language)))
 });
 
 setInterval(() => [
@@ -249,8 +249,8 @@ setInterval(() => [
 ], 100);
 
 const languageSelector = () => ({
-    view: ({ attrs: { onchange, langs = ['en'] } }) => select(
-        langs.map(l => option({ onclick: () => onchange(l) }, l))
+    view: ({ attrs: { onchange, langs = ['en'] } }) => select.margin({ onchange: e => onchange(e.target.value) },
+        langs.map(l => option({ value: l }, l))
     )
 });
 
@@ -269,7 +269,8 @@ m.mount(document.body, {
             )
         ), !game.lost() ? null : h3.stars({ onclick: () => game = createGame(7) }, "Lost! Again?"),
         h1('Blocker ', m(scoreView), ' ', game.starActive() ? m(star) : null),
-        m(numberView, { number: vScore }), m(languageSelector, {
+        m(numberView, { number: vScore }),
+        m(languageSelector, {
             langs: ['en', 'de'],
             onchange: e => (language = e)
         }),
