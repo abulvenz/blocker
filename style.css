@@ -99,6 +99,7 @@ h3.stars {}
 
 .red2 {
     background-color: lightcoral;
+    border-radius: min(10vh, 10vw);
 }
 
 .green {
