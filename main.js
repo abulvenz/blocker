@@ -137,6 +137,11 @@ const createGame = (N, initial = false) => {
     };
     const click = (idx, cb) => {
         const connected = flood(coord(idx));
+        if (connected.length < 3 && !state.starActive && state.stars > 0) {
+            state.starActive = true;
+            state.stars -= 1;
+        }
+
         if (connected.length >= 3 || state.starActive) {
             state.clicks += 1;
             const count = connected
@@ -170,6 +175,7 @@ const createGame = (N, initial = false) => {
                 state.field[idx].c = 'RED2';
                 state.field[idx].x = state.key++;
             }
+
             state.stars += trunc(nScore / 10000);
             state.starActive = false;
             setTimeout(() => drop(cb), 200);
@@ -208,7 +214,7 @@ const createGame = (N, initial = false) => {
         click,
         borderClasses,
         activateStar: () => {
-            if (!state.starActive) {
+            if (!state.starActive && state.stars > 0) {
                 state.starActive = true;
                 state.stars--;
             }
@@ -251,10 +257,13 @@ const numberView = (vnode) => ({
     view: ({ attrs }) => div.margin(small.margin(N.numberToText(attrs.number, language)))
 });
 
-setInterval(() => [
-    vScore += ((vScore < game.score()) ? trunc((game.score() - vScore) / 2) : 0),
-    m.redraw()
-], 100);
+setInterval(() => {
+    const add = ((vScore < game.score()) ? trunc((game.score() - vScore) / 2) : 0);
+    if (add > 0) {
+        vScore += add;
+        m.redraw();
+    }
+}, 100);
 
 const languageSelector = () => ({
     view: ({ attrs: { onchange, langs = ['en'] } }) => select.margin({ onchange: e => onchange(e.target.value) },
@@ -283,8 +292,8 @@ m.mount(document.body, {
             onchange: e => (language = e)
         }),
         div.stars(
-            range(game.stars()).map(stark => m(star, {
+            m(star, {
                 onclick: () => game.activateStar()
-            }, '*'))),
+            }, '*'), game.stars()),
     ],
 });

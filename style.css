@@ -14,17 +14,18 @@ h1 {
 }
 
 div.margin {
-    margin: 2vw 10vw;
+    margin: 0 10vw;
     word-wrap: break-word;
     hyphens: auto;
 }
 
 select.margin {
-    margin: 2vw 10vw;
+    margin: 1em 10vw;
 }
 
 .stars {
-    margin: 2vw 10vw;
+    margin: 0 10vw;
+    display: grid;
 }
 
 h3.stars {}
