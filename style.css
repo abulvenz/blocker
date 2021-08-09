@@ -65,7 +65,7 @@ h3.stars {}
     justify-content: center;
     align-content: center;
     /*    animation: driveIn cubic-bezier(0.075, 0.82, 0.165, 1) 1s;*/
-    animation: driveIn linear .2s;
+    animation: driveIn linear .05s;
 }
 
 @keyframes pulse-animation {
@@ -129,25 +129,25 @@ h3.stars {}
 .connected-top {
     border-top-left-radius: 0vw;
     border-top-right-radius: 0vw;
-    animation: connect-top .2s linear;
+    animation: connect-top .05s linear;
 }
 
 .connected-left {
     border-top-left-radius: 0vw;
     border-bottom-left-radius: 0vw;
-    animation: connect-left .2s linear;
+    animation: connect-left .05s linear;
 }
 
 .connected-right {
     border-top-right-radius: 0vw;
     border-bottom-right-radius: 0vw;
-    animation: connect-right .2s linear;
+    animation: connect-right .05s linear;
 }
 
 .connected-bottom {
     border-bottom-left-radius: 0vw;
     border-bottom-right-radius: 0vw;
-    animation: connect-bottom .2s linear;
+    animation: connect-bottom .05s linear;
 }
 
 @keyframes connect-top {

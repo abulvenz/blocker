@@ -128,7 +128,7 @@ const createGame = (N, initial = false) => {
                 }
             });
         if (dropped) {
-            setTimeout(() => drop(cb), 200);
+            setTimeout(() => drop(cb), 50);
         } else {
             state.lost = !check();
             save();
@@ -178,7 +178,7 @@ const createGame = (N, initial = false) => {
 
             state.stars += trunc(nScore / 10000);
             state.starActive = false;
-            setTimeout(() => drop(cb), 200);
+            setTimeout(() => drop(cb), 0);
         }
     };
 
