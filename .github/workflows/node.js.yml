@@ -43,8 +43,8 @@ jobs:
     - uses: actions/download-artifact@v3
       id: download
       with:
-        name: 'my-artifact'
-        path: path/to/artifacts
+        name: gh-page
+        path: ./docs/
 
     - name: 'Echo download path'
       run: echo ${{steps.download.outputs.download-path}}
