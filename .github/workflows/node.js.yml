@@ -28,7 +28,7 @@ jobs:
         cache: 'npm'
     - run: npm ci
     - run: npm run build --if-present
-    - run: git add .
+    - run: git add docs/
     - run: git config --global user.email "actions@github.com"
     - run: git config --global user.name "Build bot"
     - run: git commit -m "Automated page build"
