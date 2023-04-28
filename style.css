@@ -5,7 +5,7 @@ body {
 }
 
 .field {
-    margin: 10vw 10vw 0vw;
+    margin: 10vh 10vw 0vw;
     border-radius: min(1vh, 1vw);
 }
 
@@ -72,6 +72,7 @@ h3.stars {}
     0% {
         box-shadow: 0 0 0 0px rgba(255, 255, 255, 1);
     }
+
     100% {
         box-shadow: 0 0 0 min(.3vh, .3vw) rgba(180, 164, 164, .5);
     }
@@ -81,6 +82,7 @@ h3.stars {}
     0% {
         box-shadow: 0 0 0 0px rgba(255, 255, 255, 1);
     }
+
     100% {
         box-shadow: 0 0 0 min(3vh, 3vw) rgba(180, 164, 164, 0);
     }
@@ -155,6 +157,7 @@ h3.stars {}
         border-top-left-radius: 2vw;
         border-top-right-radius: 2vw;
     }
+
     100% {
         border-top-left-radius: 0vw;
         border-top-right-radius: 0vw;
@@ -166,6 +169,7 @@ h3.stars {}
         border-bottom-left-radius: 2vw;
         border-bottom-right-radius: 2vw;
     }
+
     100% {
         border-bottom-left-radius: 0vw;
         border-bottom-right-radius: 0vw;
@@ -177,6 +181,7 @@ h3.stars {}
         border-top-left-radius: 2vw;
         border-bottom-left-radius: 2vw;
     }
+
     100% {
         border-top-left-radius: 0vw;
         border-bottom-left-radius: 0vw;
@@ -188,6 +193,7 @@ h3.stars {}
         border-top-right-radius: 2vw;
         border-bottom-right-radius: 2vw;
     }
+
     100% {
         border-top-right-radius: 0vw;
         border-bottom-right-radius: 0vw;
@@ -199,6 +205,7 @@ h3.stars {}
         opacity: 0;
         transform: rotate(900);
     }
+
     100% {
         transform: rotate(0);
         opacity: 1;
@@ -207,8 +214,9 @@ h3.stars {}
 
 @keyframes driveIn {
     0% {
-        transform: translateY( max(-11vh, -11vw));
+        transform: translateY(max(-11vh, -11vw));
     }
+
     100% {
         transform: translateY(0vw);
     }
@@ -218,6 +226,7 @@ h3.stars {}
     0% {
         opacity: 1;
     }
+
     100% {
         opacity: 0;
     }
@@ -227,6 +236,7 @@ h3.stars {}
     0% {
         opacity: 0;
     }
+
     100% {
         opacity: 1;
     }
@@ -236,6 +246,7 @@ h3.stars {}
     0% {
         opacity: 0;
     }
+
     100% {
         opacity: 1;
     }
@@ -245,6 +256,7 @@ h3.stars {}
     0% {
         opacity: 0;
     }
+
     100% {
         opacity: 1;
     }
@@ -254,6 +266,7 @@ h3.stars {}
     0% {
         opacity: 0;
     }
+
     100% {
         opacity: 1;
     }
