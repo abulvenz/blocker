@@ -48,23 +48,12 @@ jobs:
 
     - name: 'Echo download path'
       run: echo ${{steps.download.outputs.download-path}}
-      
-    - name: Check if there are any changes
-      id: verify_diff
-      run: |
-        git diff --quiet . || echo "changed=true" >> $GITHUB_OUTPUT
 
-    - name: Commit
-      if: steps.verify_diff.outputs.changed == 'true'
+    - name: Commit report
       run: |
-        git config --local user.email "41898282+github-actions[bot]@users.noreply.github.com"
-        git config --local user.name "github-actions[bot]"
-        git add .
-        git commit -m "Build" -a
-
-    - name: Push
-      if: steps.verify_diff.outputs.changed == 'true'
-      uses: ad-m/github-push-action@master
-      with:
-        github_token: ${{ secrets.GITHUB_TOKEN }}
-        branch: ${{ github.ref }}
+        git config --global user.name 'Gitbot'
+        git config --global user.email 'abulvenz@users.noreply.github.com'
+        git remote set-url origin https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/$GITHUB_REPOSITORY
+        git checkout "${GITHUB_REF:11}"
+        git commit -am "Automated report"
+        git push
