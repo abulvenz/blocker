@@ -13,7 +13,7 @@
   "version": "1.0.0",
   "scripts": {
     "start": "parcel index.html",
-    "build": "rm -rf docs && parcel build --public-url=https://abulvenz.github.io/blocker --dist-dir=docs index.html",
+    "build": "rm -rf docs && parcel build --public-url=https://abulvenz.github.io/blocker --dist-dir=docs index.html && git add docs/",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
