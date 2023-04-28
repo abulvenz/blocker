@@ -32,6 +32,12 @@ jobs:
     - run: npm ci
     - run: npm run build --if-present
     - run: ls docs/
+    
+    - uses: actions/upload-artifact@v3
+      with:
+        name: gh-page
+        path: docs/
+        
     - name: Check if there are any changes
       id: verify_diff
       run: |
